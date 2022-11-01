@@ -19,8 +19,8 @@ public class PlayerService {
         this.playerRepository = playerRepository;
     }
 
-    public List<Player> get() {
-        return playerRepository.findAll();
+    public List<Player> getTop() {
+        return playerRepository.findTop5ByOrderByWinsDesc();
     }
 
     public Optional<Player> get(String name) {

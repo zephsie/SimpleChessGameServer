@@ -28,7 +28,7 @@ public class PlayerRestController {
     @GetMapping(value = "/top", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Player>> get() {
         try {
-            return ResponseEntity.ok(playerService.get());
+            return ResponseEntity.ok(playerService.getTop());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
