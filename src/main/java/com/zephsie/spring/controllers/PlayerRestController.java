@@ -1,8 +1,8 @@
 package com.zephsie.spring.controllers;
 
+import com.zephsie.spring.dto.PlayerDTO;
 import com.zephsie.spring.models.Player;
 import com.zephsie.spring.services.PlayerService;
-import com.zephsie.spring.utits.PlayerValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,16 +17,13 @@ import java.util.List;
 public class PlayerRestController {
     private final PlayerService playerService;
 
-    private final PlayerValidator playerValidator;
-
     @Autowired
-    public PlayerRestController(PlayerService playerService, PlayerValidator playerValidator) {
+    public PlayerRestController(PlayerService playerService) {
         this.playerService = playerService;
-        this.playerValidator = playerValidator;
     }
 
     @GetMapping(value = "/top", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Player>> get() {
+    public ResponseEntity<List<Player>> getTop() {
         try {
             return ResponseEntity.ok(playerService.getTop());
         } catch (Exception e) {
@@ -35,23 +32,16 @@ public class PlayerRestController {
     }
 
     @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Player> save(@Valid @RequestBody Player player, BindingResult bindingResult) {
+    public ResponseEntity<Player> add(@Valid @RequestBody PlayerDTO playerDTO, BindingResult bindingResult) {
         try {
-            playerValidator.validate(player, bindingResult);
-
-            if (bindingResult.hasErrors()) {
-                return ResponseEntity.badRequest().build();
-            }
-
-            playerService.save(player);
-            return ResponseEntity.ok(player);
+            return bindingResult.hasErrors() ? ResponseEntity.badRequest().build() : ResponseEntity.ok(playerService.save(playerDTO));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
     }
 
 
-    @PatchMapping(value = "/{id}/win", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/{id}/win", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Player> addWin(@PathVariable Long id) {
         try {
             return playerService.addWin(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());

@@ -23,7 +23,13 @@ public class Player {
     public Player() {
     }
 
-    public Player(String name, Integer wins) {
+    public Player(String name, int wins) {
+        this.name = name;
+        this.wins = wins;
+    }
+
+    public Player(Long id, String name, int wins) {
+        this.id = id;
         this.name = name;
         this.wins = wins;
     }

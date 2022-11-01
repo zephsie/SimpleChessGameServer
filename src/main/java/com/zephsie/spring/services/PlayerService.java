@@ -1,5 +1,6 @@
 package com.zephsie.spring.services;
 
+import com.zephsie.spring.dto.PlayerDTO;
 import com.zephsie.spring.models.Player;
 import com.zephsie.spring.repositories.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +24,9 @@ public class PlayerService {
         return playerRepository.findTop5ByOrderByWinsDesc();
     }
 
-    public Optional<Player> get(String name) {
-        return playerRepository.findByName(name);
-    }
-
     @Transactional
-    public void save(Player player) {
-        playerRepository.save(player);
+    public Player save(PlayerDTO playerDTO) {
+        return playerRepository.findByName(playerDTO.getName()).orElseGet(() -> playerRepository.save(new Player(playerDTO.getName(), 0)));
     }
 
     @Transactional
