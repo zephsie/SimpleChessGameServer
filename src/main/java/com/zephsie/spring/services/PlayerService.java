@@ -1,8 +1,8 @@
 package com.zephsie.spring.services;
 
-import com.zephsie.spring.dto.PlayerDTO;
 import com.zephsie.spring.models.Player;
 import com.zephsie.spring.repositories.PlayerRepository;
+import com.zephsie.spring.util.PlayerNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,25 +20,31 @@ public class PlayerService {
         this.playerRepository = playerRepository;
     }
 
-    public List<Player> getTop() {
+    public Optional<Player> get(Long id) {
+        return playerRepository.findById(id);
+    }
+
+    public List<Player> getTop5() {
         return playerRepository.findTop5ByOrderByWinsDesc();
     }
 
     @Transactional
-    public Player save(PlayerDTO playerDTO) {
-        return playerRepository.findByName(playerDTO.getName()).orElseGet(() -> playerRepository.save(new Player(playerDTO.getName(), 0)));
+    public Player save(Player player) {
+        return playerRepository.findByName(player.getName()).orElseGet(() -> playerRepository.save(new Player(player.getName(), 0)));
     }
 
     @Transactional
-    public Optional<Player> addWin(Long id) {
+    public Player addWin(Long id) {
         Optional<Player> player = playerRepository.findById(id);
 
         if (player.isPresent()) {
             Player p = player.get();
             p.setWins(p.getWins() + 1);
             playerRepository.save(p);
+        } else {
+            throw new PlayerNotFoundException("Player not found");
         }
 
-        return player;
+        return player.get();
     }
 }
